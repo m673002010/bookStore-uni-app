@@ -33,7 +33,10 @@
 </template>
 
 <script>
+	import badgeMix from '../../mixins/tabbar-badge.js'
+	
 	export default {
+		mixins: [badgeMix],
 		data() {
 			return {
 				swiperList: [],
@@ -58,7 +61,7 @@
 					data: res
 				} = await uni.$http.get('/book/bookList')
 				if (res.code !== 0) return uni.$showMsg()
-				this.newBookList = res.data
+				this.newBookList = res.data.bookList
 			},
 			picClick(item) {
 				uni.navigateTo({

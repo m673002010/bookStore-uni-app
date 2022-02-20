@@ -24,17 +24,19 @@
 
 		}, {
 			"path": "bookList/bookList",
-			"style": {}
-		}    ,{
-                    "path" : "search/search",
-                    "style" :                                                                                    
-                {
-                    "navigationBarTitleText": "",
-                    "enablePullDownRefresh": false
-                }
-                
-                }
-            ]
+			"style": {
+				"onReachBottomDistance": 70, // 上拉列表触发刷新距离
+				"enablePullDownRefresh": true, // 下拉加载
+				"backgroundColor":"#efefef"
+			}
+		}, {
+			"path": "search/search",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
+		}]
 	}],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
