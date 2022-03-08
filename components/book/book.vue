@@ -11,10 +11,11 @@
 				<text>《{{book.name}}》</text>
 			</view>
 			<view class="book-info">
-				<text>{{book.author}}/</text> 
-				<text>{{book.publisher}}/</text>
-				<text>{{book.publishDate}}/</text> 
-				<text>{{book.price | tofixed}}</text>
+				<text>{{book.author}}</text>
+				<text>{{book.publishDate}}</text>
+<!-- 				<text>{{book.publisher}}/</text>
+				<text>{{book.publishDate}}</text> 
+				<text>{{book.price | tofixed}}</text> -->
 				<uni-number-box v-if="showCount" :min="1" :value="book.count" @change="countChange"></uni-number-box>
 			</view>
 		</view>
@@ -90,7 +91,7 @@
 			justify-content: space-between;
 			
 			.book-name {
-				font-size: 12px;
+				font-size: 14px;
 			}
 			
 			.book-info {

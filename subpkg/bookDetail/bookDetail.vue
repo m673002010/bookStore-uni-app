@@ -3,7 +3,7 @@
 		<view style="font-size: 20px; font-weight:bold; margin-bottom: 10px;">
 			<text>{{bookInfo.name}}</text>
 		</view>
-		<view style="display: flex; margin-bottom: 10px;">
+		<view style="display: flex; margin-bottom: 20px;">
 			<view style="height: 210px; width: 150px; margin-right: 10px;">
 				<image :src="bookInfo.imageSrc" style="height: 100%; width: 100%;"></image>
 			</view>
@@ -12,21 +12,23 @@
 				<view class="info"><text>作者:{{bookInfo.author}}</text></view>
 				<view class="info"><text>出版社:{{bookInfo.publisher}}</text></view>
 				<view class="info"><text>出版时间:{{bookInfo.publishDate}}</text></view>
-				<view class="info"><text>定价:{{bookInfo.price}}元</text></view>
-				<view class="info"><text>页数:2000</text></view>
+				<view class="info"><text>定价:{{bookInfo.price || 0}}元</text></view>
+				<view class="info"><text>页数:{{bookInfo.pageTotal || 0}}</text></view>
 				<view class="info"><text>ISBN:{{bookInfo.isbn}}</text></view>
 			</view>
 		</view>
 
 		<view
-			style="display: flex; align-items: center; justify-content: center; border: 2px solid #3CB371; border-radius: 10px;">
+			@click="collectBook"
+			style="display: flex; align-items: center; justify-content: center; border: 2px solid #3CB371; border-radius: 10px; margin-bottom: 20px;">
 			<uni-icons type="star" size="30" color="green"></uni-icons>
-			<text>收藏</text>
+			<text v-if="isCollected">已收藏</text>
+			<text v-else>未收藏</text>
 		</view>
 		
-		<!-- 商品导航组件 -->
-		<view style="position: fixed; bottom: 0; left: 0; width: 100%;">
-			<uni-goods-nav :fill="true" :options="options" :buttonGroup="buttonGroup" @click="onClick" @buttonClick="buttonClick"></uni-goods-nav>
+		<view>
+			<view><text>内容简介:</text></view>
+			<view v-html="bookInfo.introduction" class="intro"></view>
 		</view>
 	</view>
 </template>
@@ -39,33 +41,10 @@
 		data() {
 			return {
 				bookInfo: {},
-				options: [
-					{
-						icon: 'shop',
-						text: '店铺'
-					},
-					{
-						icon: 'cart',
-						text: '购物车',
-						info: 0
-					}
-				],
-				buttonGroup: [
-					{
-						text: '加入购物车',
-						backgroundColor: '#ff0000',
-						color: '#fff'
-					},
-					{
-						text: '立即购买',
-						backgroundColor: '#ffa200',
-						color: '#fff'
-					}
-				]
+				isCollected: false, // 该书本是否已收藏
 			}
 		},
 		methods: {
-			...mapMutations('mCart', ['addToCart']),
 			async getBookDetail(bookId) {
 				const {
 					data: res
@@ -73,56 +52,25 @@
 					bookId
 				})
 				if (res.code !== 0) return uni.$showMsg()
-				this.bookInfo = res.data
+				this.bookInfo = res.data.bookInfo
+				this.isCollected = res.data.isCollected
 			},
-			onClick(e) { // 导航栏左侧按钮的点击事件处理函数
-				if (e.content.text === '购物车') {
-					uni.switchTab({
-						url: '/pages/cart/cart'
-					})
-				}
+			async collectBook() { // 收藏书籍，入库
+				if (!this.token) return uni.$showMsg('收藏请先登录')
+				const {
+					data: res
+				} = await uni.$http.post('/user/collectBook', {
+					bookInfo: this.bookInfo,
+					isCollected: !this.isCollected // 收藏或取消收藏
+				})
+				
+				if (res.code !== 0) return uni.$showMsg()
+				
+				await this.getBookDetail(this.bookInfo.bookId)
 			},
-			buttonClick(e) { // 导航栏右侧按钮的点击事件处理函数
-				if (e.content.text === '加入购物车') {
-					// 书本信息对象
-					const book = {
-						bookId: this.bookInfo.bookId,
-						name: this.bookInfo.name,
-						price: this.bookInfo.price,
-						author: this.bookInfo.author,
-						publisher: this.bookInfo.publisher,
-						publishDate: this.bookInfo.publishDate,
-						count: 1,
-						imageSrc: this.bookInfo.imageSrc,
-						state: true // 书本勾选状态
-					}
-					
-					// 调用映射的加入方法
-					this.addToCart(book)
-				}
-			}
 		},
 		computed: {
-			// 将mCart中的cart数组映射到当前页面中，作为计算属性来使用
-			...mapState('mCart', ['cart']),
-			// 映射统计购物车总数为计算属性
-			...mapGetters('mCart', ['totalCount'])
-		},
-		watch: {
-			// 监听totalCount值，通过第一个形参得到变化后的值
-			// totalCount: function (newValue) {
-			// 	const cart = this.options.find(item => item.text === '购物车')
-			// 	if (cart) cart.info = newValue
-			// }
-			// 侦听器从函数改为指向对象
-			totalCount: {
-				handler(newValue) {
-					const option = this.options.find(item => item.text === '购物车')
-					if (option) option.info = newValue
-				},
-				// 页面初次加载完毕之后立即调用，避免购物车的已有数量无法显示
-				immediate: true
-			}
+			...mapState('mUser', ['token'])
 		},
 		onLoad(options) {
 			const bookId = options.bookId
@@ -134,5 +82,9 @@
 <style lang="scss">
 	.info {
 		margin-bottom: 10px;
+	}
+	
+	.intro {
+		text-indent:2em;
 	}
 </style>

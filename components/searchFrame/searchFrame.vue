@@ -26,9 +26,7 @@
 		},
 		name:"searchFrame",
 		data() {
-			return {
-				
-			}
+			return {}
 		},
 		methods: {
 			search () {

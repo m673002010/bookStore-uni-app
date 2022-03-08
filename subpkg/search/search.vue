@@ -5,11 +5,14 @@
 		</view>
 		
 		<view class="suggest-list" v-if="searchList.length !== 0">
-			<view class="suggest-item" v-for="(item, i) in searchList" :key="i" @click="gotoBookDetail(item)">
+<!-- 			<view class="suggest-item" v-for="(item, i) in searchList" :key="i" @click="gotoBookDetail(item)">
 				<view class="desc">
 					{{item.name}}
 				</view>
 				<uni-icons type="arrowright" size="16"></uni-icons>
+			</view> -->
+			<view v-for="(item, i) in searchList" :key="i" @click="gotoBookDetail(item)">
+				<book :book="item"></book>
 			</view>
 		</view>
 		
@@ -36,7 +39,7 @@
 				keyword: '',
 				searchList: [],
 				historyList: []
-			};
+			}
 		},
 		methods: {
 			typeInput (e) {
@@ -59,13 +62,13 @@
 				// 获取搜索结果
 				const { data: res } = await uni.$http.get('/search', { keyword: this.keyword })
 				if (res.code !== 0) return uni.$showMsg()
-				this.searchList = res.data
+				this.searchList = res.data.bookList
 				
 				this.saveSearchHistory(this.keyword)
 			},
 			gotoBookDetail (item) {
 				uni.navigateTo({
-					url: '/subpkg/bookDetail/bookDetail?isbn=' + item.isbn
+					url: '/subpkg/bookDetail/bookDetail?bookId=' + item.bookId
 				})
 			},
 			gotoBookList (item) {
@@ -109,20 +112,20 @@
 	.suggest-list {
 		padding: 0 5px;
 		
-		.suggest-item {
-			font-size: 12px;
-			padding: 13px 0;
-			border-bottom: 2px solid #efefef;
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
+		// .suggest-item {
+		// 	font-size: 12px;
+		// 	padding: 13px 0;
+		// 	border-bottom: 2px solid #efefef;
+		// 	display: flex;
+		// 	align-items: center;
+		// 	justify-content: space-between;
 			
-			.desc {
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-			}
-		}
+		// 	.desc {
+		// 		white-space: nowrap;
+		// 		overflow: hidden;
+		// 		text-overflow: ellipsis;
+		// 	}
+		// }
 	}
 	
 	.history-box {

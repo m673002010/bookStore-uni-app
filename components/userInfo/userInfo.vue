@@ -29,7 +29,7 @@
 			
 			<view class="panel">
 				<view class="panel-title">
-					我的订单
+					我的书架
 				</view>
 				
 				<view class="panel-body">
@@ -54,11 +54,7 @@
 			
 			<view class="panel">
 				<view class="panel-item">
-					<text>收货地址</text>
-					<uni-icons type="arrowright" size="15"></uni-icons>
-				</view>
-				<view class="panel-item">
-					<text>联系客服</text>
+					<text>联系店长</text>
 					<uni-icons type="arrowright" size="15"></uni-icons>
 				</view>
 				<view class="panel-item" @click="logout">

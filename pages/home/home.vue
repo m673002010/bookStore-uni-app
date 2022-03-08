@@ -65,7 +65,7 @@
 			},
 			picClick(item) {
 				uni.navigateTo({
-					url: '/subpkg/bookDetail/bookDetail?isbn=' + item.isbn
+					url: '/subpkg/bookDetail/bookDetail?bookId=' + item.bookId
 				})
 			},
 			moreClick(item) {
