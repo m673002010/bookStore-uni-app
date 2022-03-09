@@ -21,7 +21,7 @@
 		<view
 			@click="collectBook"
 			style="display: flex; align-items: center; justify-content: center; border: 2px solid #3CB371; border-radius: 10px; margin-bottom: 20px;">
-			<uni-icons type="star" size="30" color="green"></uni-icons>
+			<uni-icons :type="isfilled" size="30" color="green"></uni-icons>
 			<text v-if="isCollected">已收藏</text>
 			<text v-else>未收藏</text>
 		</view>
@@ -70,7 +70,10 @@
 			},
 		},
 		computed: {
-			...mapState('mUser', ['token'])
+			...mapState('mUser', ['token']),
+			isfilled: function () {
+				return this.isCollected ? 'star-filled' : 'star'
+			}
 		},
 		onLoad(options) {
 			const bookId = options.bookId

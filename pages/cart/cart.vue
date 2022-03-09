@@ -1,49 +1,27 @@
 <template>
 	<view v-if="cart.length !== 0" style="padding-bottom: 50px;">
-		<view>
-			<userAddress></userAddress>
-		</view>
-		
-		<view
-			style="height: 40px; display: flex; align-items: center; padding: 10px; border-bottom: 2px solid #efefef;">
-			<uni-icons type="shop" size="18"></uni-icons>
-			<text style="font-size: 14px; margin-left: 10px;">购物车</text>
-		</view>
-
-		<!-- 商品列表区 -->
+		<!-- 收藏书本列表区 -->
 		<uni-swipe-action>
-			<block v-for="(book, i) in cart" :key="i">
+			<block v-for="(book, i) in bookList" :key="i">
 				<uni-swipe-action-item :right-options="options" @click="clickSwpie(book)">
-					<book :book="book" :showRadio="true" :showCount="true" @radio-change="radioChange"
-						@count-change="countChange"></book>
+					<book :book="book"></book>
 				</uni-swipe-action-item>
 			</block>
 		</uni-swipe-action>
-		
-		<!-- 结算组件 -->
-		<settle></settle>
 	</view>
 	
 	<view v-else style="display: flex; flex-direction: column; align-items: center; padding-top:  150px;">
-		<image style="width: 90px; height: 90px" src="/static/cart_empty@2x.png"></image>
-		<text style="font-size: 12px; color: gray; margin-top: 15px;">空空如也</text>
+		<text style="font-size: 16px; color: gray; margin-top: 15px;">空空如也</text>
 	</view>
 </template>
 
 <script>
-	import {
-		mapState,
-		mapMutations
-	} from 'vuex'
-	import badgeMix from '../../mixins/tabbar-badge.js'
-
 	export default {
-		// 导入封装的mixin
-		mixins: [badgeMix],
 		data() {
 			return {
+				bookList: [],
 				options: [{
-					text: '删除',
+					text: '取消收藏',
 					style: {
 						backgroundColor: '#C00000'
 					}
@@ -51,21 +29,24 @@
 			}
 		},
 		methods: {
-			radioChange(e) {
-				this.updateBookState(e)
+			async getCollectedBooks () {
+				const {
+					data: res
+				} = await uni.$http.get('/user/collectedBooks')
+				if (res.code !== 0) return uni.$showMsg()
+				this.bookList = res.data
 			},
-			countChange(e) {
-				this.updateBookCount(e)
-			},
-			clickSwpie(book) {
-				this.removeBookById(book.bookId)
-			},
-			...mapMutations('mCart', ['updateBookState']),
-			...mapMutations('mCart', ['updateBookCount']),
-			...mapMutations('mCart', ['removeBookById'])
+			async clickSwpie (book) {
+				const {
+					data: res
+				} = await uni.$http.get('/user/cancelCollected', { bookId: book.bookId })
+				if (res.code !== 0) return uni.$showMsg()
+				
+				await this.getCollectedBooks()
+			}
 		},
-		computed: {
-			...mapState('mCart', ['cart'])
+		onLoad() {
+			this.getCollectedBooks()
 		}
 	}
 </script>

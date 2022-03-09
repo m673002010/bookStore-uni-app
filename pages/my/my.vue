@@ -7,11 +7,11 @@
 </template>
 
 <script>
-	import badgeMix from '../../mixins/tabbar-badge.js'
+	// import badgeMix from '../../mixins/tabbar-badge.js'
 	import { mapState } from 'vuex'
 	
 	export default {
-		mixins: [badgeMix],
+		// mixins: [badgeMix],
 		data() {
 			return {}
 		},
